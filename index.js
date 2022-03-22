@@ -11,7 +11,7 @@ const baseURL = 'https://api.github.com';
 form.addEventListener("submit", profileSearch);
 
 
-async function profileSearch(e) {
+function profileSearch(e) {
     e.preventDefault();
     
     const userName = input.value;
@@ -26,32 +26,47 @@ async function profileSearch(e) {
 
 async function showUser(userURL) {
     const userData = await fetchFunc(userURL);
-    
-    const title = userOutput.querySelector("h2");
-    title.textContent = userData['login'];
+    if (userData !== undefined) {
+        const title = userOutput.querySelector("h2");
+        title.textContent = userData['login'];
 
-    const avatar = userOutput.querySelector("img");
-    avatar.src = userData['avatar_url'];
-    avatar.alt = `Avatar of GitHub user ${userData['login']}`
+        const avatar = userOutput.querySelector("img");
+        avatar.src = userData['avatar_url'];
+        avatar.alt = `Avatar of GitHub user ${userData['login']}`        
+    }
 }
 
 async function showStarred(userURL) {
     const starredRepos = await fetchFunc(`${userURL}/starred`);
-    
+    const template = document.querySelector("template");
+    console.log(starredRepos)
+    for (repo of starredRepos) {
+        const domFragment = template.content.cloneNode(true);
+
+        const name = domFragment.querySelector("h4");
+        const description = domFragment.querySelector("p")
+        const link = domFragment.querySelectorAll("a")[0]
+        const deployment = domFragment.querySelectorAll("a")[1]
+
+        name.textContent = repo['name']
+        description.textContent = repo['description']
+        link.href = repo['html_url']
+        deployment.href = repo['homepage']
+        starredOutput.appendChild(domFragment)
+    }
 }
 
 async function showEvents(userURL) {
     const events = await fetchFunc(`${userURL}/events`);
-    
+
 }
 
 async function fetchFunc(url) {
     try{
         const response = await fetch(url);
-        const json = response.json();
-        console.log(json)
+        const json = await response.json();
         if (!response.ok) {
-            throw new Error(`Somethings gone wrong: ${response.status}`);
+            throw new Error(`Somethings gone wrong: ${response.status} ${json.message}`);
         }
         return json;
     } catch (error) {
