@@ -28,11 +28,11 @@ async function showUser(userURL) {
     const userData = await fetchFunc(userURL);
     if (userData !== undefined) {
         const title = userOutput.querySelector("h2");
-        title.textContent = userData['login'];
+        title.textContent = userData.login;
 
         const avatar = userOutput.querySelector("img");
-        avatar.src = userData['avatar_url'];
-        avatar.alt = `Avatar of GitHub user ${userData['login']}`        
+        avatar.src = userData.avatar_url;
+        avatar.alt = `Avatar of GitHub user ${userData.login}`        
     }
 }
 
@@ -48,10 +48,10 @@ async function showStarred(userURL) {
         const link = domFragment.querySelectorAll("a")[0]
         const deployment = domFragment.querySelectorAll("a")[1]
 
-        name.textContent = repo['name']
-        description.textContent = repo['description']
-        link.href = repo['html_url']
-        deployment.href = repo['homepage']
+        name.textContent = repo.name
+        description.textContent = repo.description
+        link.href = repo.html_url
+        deployment.href = repo.homepage
         starredOutput.appendChild(domFragment)
     }
 }
